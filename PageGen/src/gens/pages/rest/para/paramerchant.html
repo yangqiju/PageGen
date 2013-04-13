@@ -1,0 +1,464 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>第三方商户表</title>
+
+</head>
+<script src="../js/dojo/dojo.js"
+	data-dojo-config="parseOnLoad: true">
+</script>
+<script type="text/javascript" src="../js/nights/header.js"> </script>
+<script type="text/javascript">
+	dojo.require("dojo.parser");
+	dojo.require("dojo/store/Memory");
+	dojo.require("dojo.data.ItemFileWriteStore");
+	dojo.require("dojox.grid.DataGrid");
+	dojo.require("dijit/Dialog");
+	dojo.require("dijit/form/Button");
+	dojo.require("dijit/form/TextBox");
+	dojo.require("dijit/form/DateTextBox");
+	dojo.require("dijit/form/TimeTextBox");
+	dojo.require("dijit.form.NumberTextBox");
+	dojo.require("dijit/form/FilteringSelect");
+	dojo.require("dijit/form/ValidationTextBox");
+	dojo.require("dojox.widget.Standby");
+	
+	require([ "dojo/ready", "dojo/dom","nights/TestDateBox"], function(ready,dom,TestDateBox) {
+		ready(function() {
+	        
+
+	    });
+	});
+
+</script>
+
+
+<body class="claro">
+	<div class="S_Nva f_s_12">
+		<a href="../ext/welcome.html">首页</a> >> <a href="">参数管理</a> >> <span>第三方商户表</span>
+	</div>
+	<div class="S_Other f_s_12" style="height: 109px">
+	<form id="searchform">
+		<div class="S_OtherTop">
+			<input type="button" id="newBtn" class="btnNew1 btnZoom" 
+			style="background: url(../images/add.png);margin-left:20px;" />
+			<input type="button" id="searchbtn" class="btnNew1 btnZoom"
+				style="background: url(../images/save.png);margin-left:110px;" />
+			<input type="button" id="exportBtn" class="btnNew1 btnZoom" 
+			style="background: url(../images/save.png);margin-left:200px;" />
+			<input type="button" id="deleteSelected" class="btnNew1 btnZoom" 
+			style="background: url(../images/cancel.png);margin-left:290px;" />
+		</div>
+
+
+	<div class="S_OtherBottom" style="height: 66px">
+
+		<table  style="margin-left: 8px">
+			<tr align="right">	
+			<td>商户编号:</td> 
+					<td><input name="s_merchantid" id="s_merchantid" type="text"
+					class="txt2" /></td>	
+			<td>商户名称:</td> 
+					<td><input name="s_merchantname" id="s_merchantname" type="text"
+					class="txt2" /></td>	
+			<td>商户注册ip(多个ip以冒号分割):</td> 
+					<td><input name="s_ipaddr" id="s_ipaddr" type="text"
+					class="txt2" /></td>	
+					</tr><tr>
+			<td>状态:</td> 
+				<td><select data-dojo-type="dijit/form/FilteringSelect" name="s_status" id="s_status" class="dojoselect">
+					<option value="" selected="selected">全部</option>
+						<option value="1">正常投注</option>
+						<option value="0">关闭投注</option>
+				</select></td>
+			<td>商户安全码:</td> 
+					<td><input name="s_merchantkey" id="s_merchantkey" type="text"
+					class="txt2" /></td>	
+			<td>ftp文件目录:</td> 
+					<td><input name="s_ftppath" id="s_ftppath" type="text"
+					class="txt2" /></td>	
+		</tr></table>
+			
+		</div>
+		</form>
+	</div>
+	<div id="basic4" class="S_Other">
+		<div id="gridDiv" class="claro" ></div>
+	</div>
+	<div data-dojo-id="basicStandby" data-dojo-type="dojox.widget.Standby"
+		data-dojo-props="target:'basic4', color:'lightgray', image:'../images/loading.gif'"></div>
+	<div class="Page f_s_12">
+		<form style="margin-left:30px;">
+		每页显示<select style="width:50px" id="pagecount" data-dojo-type="dijit/form/FilteringSelect" onchange="changepagesize()" >
+			<option>10</option>
+			<option>15</option>
+			<option selected>20</option>
+			<option>30</option>
+		</select>条记录
+		<ul id="pageCtrl">
+		</ul>
+		</form>
+	</div>
+	<div style="clear: both;"></div>
+	<!--<div class="dell f_s_12">
+		<div class="S_OtherTop">
+			<input type="checkbox" id="selectAll" name="checkbox2"
+				value="checkbox" /> 全选 <input type="button" class="Btn btnZoom"
+				id="deleteSelected"
+				style="background: url(../../images/b_29dell.jpg)" />
+		</div>
+	</div>-->
+
+	<div class="WinCon" data-dojo-type="dijit/Dialog"
+		data-dojo-id="myFormDialog" title="修改">
+		<div class="dijitDialogPaneContentArea">
+			<form id="submitform">
+				<table id="tbcon" border="0" cellpadding="0" cellspacing="0">
+			 <tr>
+   			   <td class="td1">商户编号</td>
+			   <td class="td2">
+					<input name="merchantid" id="merchantid" type="text"
+					class="txt" />	
+					</td>
+   			    <td class="td3">商户名称</td>
+				<td class="td4">					<input name="merchantname" id="merchantname" type="text"
+					class="txt" />	
+				</td>
+				</tr>
+			 <tr>
+   			   <td class="td1">商户注册ip(多个ip以冒号分割)</td>
+			   <td class="td2">
+					<input name="ipaddr" id="ipaddr" type="text"
+					class="txt" />	
+					</td>
+   			    <td class="td3">状态</td>
+				<td class="td4">
+				<select data-dojo-type="dijit/form/FilteringSelect" name="status" id="status" class="dojoselect">
+						<option value="1">正常投注</option>
+						<option value="0">关闭投注</option>
+				</select>
+</td>
+				</tr>
+			 <tr>
+   			   <td class="td1">商户安全码</td>
+			   <td class="td2">
+					<input name="merchantkey" id="merchantkey" type="text"
+					class="txt" />	
+					</td>
+   			    <td class="td3">ftp文件目录</td>
+				<td class="td4">					<input name="ftppath" id="ftppath" type="text"
+					class="txt" />	
+				</td>
+				</tr>
+			 <tr>
+   			   <td class="td1">FTPIP</td>
+			   <td class="td2">
+					<input name="ftpip" id="ftpip" type="text"
+					class="txt" />	
+					</td>
+   			    <td class="td3">FTPUSER</td>
+				<td class="td4">					<input name="ftpuser" id="ftpuser" type="text"
+					class="txt" />	
+				</td>
+				</tr>
+			 <tr>
+   			   <td class="td1">FTPPWD</td>
+			   <td class="td2">
+					<input name="ftppwd" id="ftppwd" type="text"
+					class="txt" />	
+					</td>
+   			    <td class="td3">FTPPRORT</td>
+				<td class="td4">					<input name="ftpport" id="ftpport" type="text"
+					class="txt" />	
+				</td>
+				</tr>
+			 <tr>
+   			   <td class="td1">投注账号前缀</td>
+			   <td class="td2">
+					<input name="merchantprefix" id="merchantprefix" type="text"
+					class="txt" />	
+					</td>
+   			    <td class="td3">商户付费模式(0为预付费 1为后付费)</td>
+				<td class="td4">					<input name="pattern" id="pattern" type="text"
+					class="txt" />	
+				</td>
+				</tr>
+			 <tr>
+   			   <td class="td1">0 未加密
+1 DES加密</td>
+			   <td class="td2">
+					<input name="encrypt" id="encrypt" type="text"
+					class="txt" />	
+					</td>
+   			    <td class="td3">1全部成功
+2支持部分成功部分失败</td>
+				<td class="td4">					<input name="resulttype" id="resulttype" type="text"
+					class="txt" />	
+				</td>
+				</tr>
+			 <tr>
+   			   <td class="td1">控制上传文件后是否发送通知（0 上传FTP文件并发送通知，1 上传FTP文件不发送通知）</td>
+			   <td class="td2">
+					<input name="ftptype" id="ftptype" type="text"
+					class="txt" />	
+					</td>
+			</tr>
+					<!-- <tr>
+					<td class="td1">上传文件</td>
+					<td colspan="3" class="td2"><input type="text" class="txt2" />
+						<input type="button" class="Btn2" value="上传" /></td>
+				</tr> -->
+
+				</table>
+			</form>
+			<div style="width: 100%; height: 38px">
+				<table
+					style="height: 38px; width: 300px; position: relative; margin-left: 100px">
+					<tr>
+						<td><input name="button" type="button" id="btnWinOK"
+							class="WinConok btnZoom" /></td>
+						<td><input name="button" type="button"
+							class="WinConCancel btnZoom" onClick="myFormDialog.hide()" /></td>
+					</tr>
+				</table>
+			</div>
+		</div>
+	</div>
+	
+	
+	<div class="DivShow" id="tablehover" style="display: none;">
+		<table border="0" cellpadding="1" cellspacing="1">
+			<tr>
+				<td class="ttd2" colspan="2">详细信息</td>
+			</tr>
+			<tr>
+				<td class="ttd1" 
+				>商户编号</td>
+				<td class="ttd2" id="tt_merchantid"></td>
+			</tr>
+			<tr>
+				<td class="ttd1" 
+				>商户名称</td>
+				<td class="ttd2" id="tt_merchantname"></td>
+			</tr>
+			<tr>
+				<td class="ttd1" 
+				>商户注册ip(多个ip以冒号分割)</td>
+				<td class="ttd2" id="tt_ipaddr"></td>
+			</tr>
+			<tr>
+				<td class="ttd1" 
+				>状态</td>
+				<td class="ttd2" id="tt_status"></td>
+			</tr>
+			<tr>
+				<td class="ttd1" 
+				>商户安全码</td>
+				<td class="ttd2" id="tt_merchantkey"></td>
+			</tr>
+			<tr>
+				<td class="ttd1" 
+				>ftp文件目录</td>
+				<td class="ttd2" id="tt_ftppath"></td>
+			</tr>
+			<tr>
+				<td class="ttd1" 
+				>FTPIP</td>
+				<td class="ttd2" id="tt_ftpip"></td>
+			</tr>
+			<tr>
+				<td class="ttd1" 
+				>FTPUSER</td>
+				<td class="ttd2" id="tt_ftpuser"></td>
+			</tr>
+			<tr>
+				<td class="ttd1" 
+				>FTPPWD</td>
+				<td class="ttd2" id="tt_ftppwd"></td>
+			</tr>
+			<tr>
+				<td class="ttd1" 
+				>FTPPRORT</td>
+				<td class="ttd2" id="tt_ftpport"></td>
+			</tr>
+			<tr>
+				<td class="ttd1" 
+				>投注账号前缀</td>
+				<td class="ttd2" id="tt_merchantprefix"></td>
+			</tr>
+			<tr>
+				<td class="ttd1" 
+				>商户付费模式(0为预付费 1为后付费)</td>
+				<td class="ttd2" id="tt_pattern"></td>
+			</tr>
+			<tr>
+				<td class="ttd1" 
+				>0 未加密
+1 DES加密</td>
+				<td class="ttd2" id="tt_encrypt"></td>
+			</tr>
+			<tr>
+				<td class="ttd1" 
+				>1全部成功
+2支持部分成功部分失败</td>
+				<td class="ttd2" id="tt_resulttype"></td>
+			</tr>
+			<tr>
+				<td class="ttd1" 
+				>控制上传文件后是否发送通知（0 上传FTP文件并发送通知，1 上传FTP文件不发送通知）</td>
+				<td class="ttd2" id="tt_ftptype"></td>
+			</tr>
+		</table>
+	</div>
+
+
+	<div class="DivShow" id="detailhover" style="display: none;">
+		<table border="0" cellpadding="1" cellspacing="1">
+			<tr>
+				<td class="ttd2"><div align="center">
+						<strong id="detailhovertxt"></strong>
+					</div></td>
+			</tr>
+		</table>
+	</div>
+	
+</body>
+
+<script type="text/javascript">
+	//set up layout
+	function doSearch(grid) {
+		console.log("doSearch:" + grid);
+	}
+	var changepagesize;
+	
+	require([ "nights/tbgrid","nights/params","dojo/domReady!"], function(tbgrid,params) {
+		var statusOption = function(value){
+			 var options={"1":"正常投注","0":"关闭投注",};
+		 	return options[value];      
+		};
+		var layout = [ {
+			name : '选择',
+			field : "checked",
+			width : "30px",
+			editable : true,
+			styles : 'text-align: center;',
+			type : dojox.grid.cells.Bool,
+		}
+		, {
+			name : '商户编号',
+			field : 'merchantid',
+			desc:true,
+			column : 'merchantid',
+		}
+		, {
+			name : '商户名称',
+			field : 'merchantname',
+			desc:true,
+			column : 'merchantname',
+		}
+		, {
+			name : '商户注册ip(多个ip以冒号分割)',
+			field : 'ipaddr',
+			desc:true,
+			column : 'ipaddr',
+		}
+		, {
+			name : '状态',
+			field : 'status',
+			formatter: statusOption,
+			desc:true,
+			column : 'status',
+		}
+		, {
+			name : '商户安全码',
+			field : 'merchantkey',
+			desc:true,
+			column : 'merchantkey',
+		}
+		, {
+			name : 'ftp文件目录',
+			field : 'ftppath',
+			desc:true,
+			column : 'ftppath',
+		}
+		, {
+			name : 'FTPIP',
+			field : 'ftpip',
+			desc:true,
+			column : 'ftpip',
+		}
+		, {
+			name : 'FTPUSER',
+			field : 'ftpuser',
+			desc:true,
+			column : 'ftpuser',
+		}
+		, {
+			name : 'FTPPWD',
+			field : 'ftppwd',
+			desc:true,
+			column : 'ftppwd',
+		}
+		, {
+			name : 'FTPPRORT',
+			field : 'ftpport',
+			desc:true,
+			column : 'ftpport',
+		}
+		, {
+			name : '投注账号前缀',
+			field : 'merchantprefix',
+			desc:true,
+			column : 'merchantprefix',
+		}
+		, {
+			name : '商户付费模式(0为预付费 1为后付费)',
+			field : 'pattern',
+			desc:true,
+			column : 'pattern',
+		}
+		, {
+			name : '0 未加密
+1 DES加密',
+			field : 'encrypt',
+			desc:true,
+			column : 'encrypt',
+		}
+		, {
+			name : '1全部成功
+2支持部分成功部分失败',
+			field : 'resulttype',
+			desc:true,
+			column : 'resulttype',
+		}
+		, {
+			name : '控制上传文件后是否发送通知（0 上传FTP文件并发送通知，1 上传FTP文件不发送通知）',
+			field : 'ftptype',
+			desc:true,
+			column : 'ftptype',
+		}
+		,{
+			name : '修改',
+			field : 'modify',
+			width : "30px",
+			formatter: function(cellValue, rowIndex){
+			    // return needed images for rowIndex of column 'col1'
+			    return '<img src="../images/save.png" />';
+			}
+		}
+];
+		var notNullAble = [];
+			notNullAble.push('merchantid');
+		
+		tbgrid.setNotNullableStr(notNullAble);
+		//tbgrid.setPriv(params.getStr("priv"));
+		tbgrid.setReadOnly(false);
+		tbgrid.loadOnStart(layout,'/SpringMVCTest/paramerchant','primaryKey');
+		changepagesize=tbgrid.changepagesize;
+		
+	});
+	//dojo.require("dojox.grid.enhanced.plugins.IndirectSelection");
+
+</script>
+</html>

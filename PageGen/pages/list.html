@@ -1,0 +1,424 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>list</title>
+
+<link rel="stylesheet" href="../../js/lib/dojo/resources/dojo.css">
+<link rel="stylesheet" href="../../js/lib/dijit/themes/claro/claro.css">
+<link rel="stylesheet"
+	href="../../js/lib/dojox/grid/resources/claroGrid.css">
+
+<link href="../../css/public.css" rel="stylesheet" type="text/css" />
+<link href="../../css/main.css" rel="stylesheet" type="text/css" />
+<link href="../../css/windows.css" rel="stylesheet" type="text/css" />
+<link href="../../css/dojom.css" rel="stylesheet" type="text/css" />
+</head>
+<script src="../../js/lib/dojo/dojo.js"
+	data-dojo-config="parseOnLoad: true"></script>
+<script type="text/javascript">
+	dojo.require("dojo.parser");
+	dojo.require("dojo/store/Memory");
+
+	dojo.require("dojo.data.ItemFileWriteStore");
+	dojo.require("dojox.grid.DataGrid");
+	dojo.require("dijit/Dialog");
+	dojo.require("dijit/form/Button");
+	dojo.require("dijit/form/TextBox");
+	dojo.require("dijit/form/DateTextBox");
+	dojo.require("dijit/form/TimeTextBox");
+	dojo.require("dijit.form.NumberTextBox");
+	dojo.require("dijit/form/ComboBox");
+</script>
+
+<body class="claro M_Right"
+	style="background: none; padding-top: 0px; margin-top: 0px">
+	<div class="S_Nva f_s_12">
+		<a href="../ext/welcome.html">首页</a> >> <a href="#">${model}</a> >> <span>${tablename}</span>
+	</div>
+	<div class="S_Other f_s_12">
+		<div class="S_OtherTop">
+			运营商 <select><option>请选择</option></select> 状态 <select><option>请选择</option></select>
+			注册时间 <input type="text" class="txt1" /> 到 <input type="text"
+				class="txt1" /> <input type="button" class="Btn"
+				style="background: url(../../images/b_29.jpg)" />
+		</div>
+		<div class="S_OtherBottom">
+			手机编号 <input type="text" class="txt2" /> 帐号 <input type="text"
+				class="txt2" /> 姓名 <input type="text" class="txt2" /> 客户类型 <select><option>请选择</option></select>
+			<input type="button" id="searchbtn" class="Btn btnZoom"
+				style="background: url(../../images/b_30.jpg)" /> <input
+				type="button" id="newBtn" class="btnNew btnZoom" />
+
+		</div>
+	</div>
+	<div id="gridDiv" class="claro"></div>
+
+	<div class="Page f_s_12">
+		<ul id="pageCtrl">
+		</ul>
+	</div>
+	<div style="clear: both;"></div>
+
+	<div class="dell f_s_12">
+		<div class="S_OtherTop">
+			<input type="checkbox" name="checkbox2" value="checkbox" /> 全选 <input
+				type="button" class="Btn btnZoom"
+				style="background: url(../../images/b_29dell.jpg)" />
+		</div>
+	</div>
+
+	<div class="WinCon" data-dojo-type="dijit/Dialog"
+		data-dojo-id="myFormDialog" title="${model}－修改"
+		execute="alert('submitted w/args:\n' + dojo.toJson(arguments[0], true));">
+		<div class="dijitDialogPaneContentArea">
+			<table id="tbcon" border="0" cellpadding="0" cellspacing="0">
+			</table>
+			<div style="width:100%">
+				<table style="height: 38px;width: 300px;position: relative;margin-left: 100px">
+					<tr>
+						<td><input name="button" type="button"  class="ok btnZoom"
+							onClick="return myFormDialog.isValid();" /></td>
+						<td><input name="button" type="button" class="Cancel btnZoom"
+							onClick="myFormDialog.hide()" /></td>
+					</tr>
+				</table>
+			</div>
+		</div>
+
+	</div>
+</body>
+
+
+<script type="text/javascript">
+	//dojo.require("dojox.grid.enhanced.plugins.IndirectSelection");
+	require(
+			[ "dojo/_base/xhr", "dojo/dom", "dojo/dom-style", "dojo/query",
+					"dojo/_base/lang", "dojo/NodeList-manipulate",
+					"dojo/domReady!" ],
+			function(xhr, dom, domstyle, query, lang) {
+				var data = {
+					identifier : 'uuid',
+					items : []
+				};
+				var data_list = [ {
+					usertype : 1,
+					userid : 'tany',
+					username : '测试',
+					stats : 1,
+					passwdmd5 : 'ACF145DFFVZ',
+					email : 'tttjfifi@qq.com',
+					companyId : '公司名称23456jkfa',
+					createdate:"2012-7-9 18:20:00",
+				}, {
+					usertype : 2,
+					userid : 'tany',
+					username : '测试',
+					stats : 1,
+					passwdmd5 : 'ACF145DFFVZ',
+					email : 'tttjfifi@qq.com',
+					companyId : '公司名称23456jkfa'
+					createdate:"2012-7-7 18:20:00",
+
+				}, {
+					usertype : 3,
+					userid : 'tany',
+					username : '测试',
+					stats : 1,
+					passwdmd5 : 'ACF145DFFVZ',
+					email : 'tttjfifi@qq.com',
+					companyId : '公司名称23456jkfa'
+					createdate:"2012-7-6 18:20:00",
+				} ];
+				var pageSize = 20;
+				var rows = 600;//天津
+				var rowStart = 300;
+				var rowEnd = rowStart + pageSize;
+				var totalPage = (rows + 1) / pageSize;
+				var pageStart = rowStart / pageSize;
+				for ( var i = rowStart, l = data_list.length; i < rows
+						&& i < rowEnd; i++) {
+					data.items.push(dojo.mixin({
+						uuid : i + 1,
+						edit : false
+					}, data_list[i % l]));
+				}
+				var store = new dojo.data.ItemFileWriteStore({
+					data : data
+				});
+
+				//set up layout
+				var layout = [ {
+					name : '选择',
+					field : null,
+					width : "30px",
+					editable : true,
+					styles : 'text-align: center;',
+					type : dojox.grid.cells.Bool,
+				}, {
+					name : 'uuid',
+					field : 'uuid',
+					hidden: false,
+					disabled: 'disabled'
+				}, {
+					name : 'usertype',
+					field : 'usertype',
+					
+				}, {
+					name : 'userid',
+					field : 'userid',
+					longLine : true,
+
+				}, {
+					name : 'username',
+					field : 'username',
+
+				}, {
+					name : '状态',
+					field : 'stats',
+					choise:"(1:通过,2:暂停使用)",
+				}, {
+					name : 'passwdmd5',
+					field : 'passwdmd5',
+
+				}, {
+					name : 'email',
+					field : 'email',
+					longLine : true,
+
+				}, {
+					name : 'companyId',
+					field : 'companyId',
+				},{
+					name:"创建时间",
+					field:'createdate',
+				} ];
+
+				//init tbcon
+
+				var store = new dojo.data.ItemFileWriteStore({
+					data : data
+				});
+				{
+					var layoutcpy = lang.clone(layout);
+					var tbcon = dom.byId("tbcon");
+
+					var layoutStore = new dojo.data.ItemFileWriteStore({
+						data : {
+							identifier : 'name',
+							items : layoutcpy
+						}
+					});
+					var columnCount = 0;
+					function clearTableItem(item, request) {
+						console.log("onLayoutItem:" + layoutStore);//
+						while (tbcon.firstChild) {
+							tbcon.removeChild(tbcon.firstChild);
+						}
+					}
+					;
+					var tr;
+					function onLayoutItem(item, request) {
+						if(layoutStore.getValue(item,"field")==null)
+						{
+							return;
+						}
+						if(layoutStore.getValue(item,"hidden")==true)
+						{
+							var input = document.createElement("input");
+							input.setAttribute('type', 'hidden');
+							input.setAttribute('name', layoutStore.getValue(item,
+									"field"));
+							input.setAttribute('id', layoutStore.getValue(item,
+									"field"));
+							tbcon.appendChild(input);
+							return;
+						}
+						var newLine=false;
+						if (columnCount % 2 == 0||layoutStore.getValue(item,"longLine")==true) {
+							newLine=true;
+						}
+						if(newLine)
+						{
+							tr = document.createElement("tr");
+							tbcon.appendChild(tr);	
+						}
+						
+						var td1 = document.createElement("td");
+						if (newLine) {
+							td1.setAttribute('class', 'td1');
+						} else {
+							td1.setAttribute('class', 'td3');
+						}
+						td1.appendChild(document.createTextNode(layoutStore
+								.getValue(item, "name")));
+						tr.appendChild(td1);
+						var td2 = document.createElement("td");
+						if (newLine) {
+							td2.setAttribute('class', 'td2');
+						} else {
+							td2.setAttribute('class', 'td4');
+						}
+						
+						var input = document.createElement("input");
+						if(layoutStore.getValue(item,"longLine")==true)
+						{
+							td2.setAttribute('colspan', '3');
+							input.setAttribute('class', 'txt2');
+							columnCount=1;
+						}
+						else
+						{
+							input.setAttribute('class', 'txt');
+						}
+						input.setAttribute('name', layoutStore.getValue(item,
+								"field"));
+						input.setAttribute('id', layoutStore.getValue(item,
+								"field"));
+						if(layoutStore.getValue(item,"disabled")!=null)
+						{
+							input.setAttribute('disabled', layoutStore.getValue(item,
+							"disabled"));
+						}
+						td2.appendChild(input);
+						tr.appendChild(td2);
+						columnCount++;
+						//console.log("item:"+layoutStore.getValue(item,"name")+":field="+layoutStore.getValue(item,"field"));
+					}
+					;
+					// Callback for if the lookup fails.
+					function fetchFailed(error, request) {
+						console.log(error);
+					}
+
+					layoutStore.fetch({
+						onBegin : clearTableItem,
+						onItem : onLayoutItem,
+						onError : fetchFailed
+					});
+
+				}
+				var pageCount = (20 + 1) * 33;
+
+				// create a new grid:
+				var grid = new dojox.grid.DataGrid({
+					id : 'grid',
+					store : store,
+					structure : layout,
+				//	rowSelector : '20px',
+				}, "gridDiv");
+				// Call startup() to render the grid
+				domstyle.set("grid", {
+					"height" : pageCount + "px"
+				});
+				//console.debug(domstyle.get("grid", "height"));
+
+				grid.startup();
+
+				var pageul = query("#pageCtrl");
+				if (pageStart == 0) {
+					pageul.prepend('<li class="Check"><a >首页</a></li>');
+				} else {
+					pageul.prepend('<li class="Pre" id="li_' + (pageStart)
+							+ '"><a></a></li><li class="Other"  id="li_' + (1)
+							+ '"><a>首页</a></li>');
+				}
+				var cc = 0;
+				for ( var i = pageStart - 4; cc < 8 && i < totalPage - 1; i++) {
+					if (i <= 0) {
+						continue;
+					}
+					cc++;
+					if (i == pageStart) {
+						pageul.append('<li class="Check" id="li_' + (i + 1)
+								+ '"><a>' + (i + 1) + '</a></li>');
+					} else {
+						pageul.append('<li class="Other" id="li_' + (i + 1)
+								+ '"><a>' + (i + 1) + '</a></li>');
+					}
+				}
+
+				pageul
+						.append('<li>跳转</li><li> <input type="text" data-dojo-type="dijit.form.NumberTextBox" '
+								+ 'value="1" constraints="{min:1,max:'
+								+ (totalPage)
+								+ ',places:0}" required="true"'
+								+ 'invalidMessage= "请输入数字." id="pageindex" class="InputTxt" /></li><li> 页</li> <li> <input type="button"  id="topage" class="InputBtn" value="跳转" /></li>');
+
+				if (pageStart == totalPage - 1) {
+					pageul.append('<li class="Check" ><a>尾页</a></li>');
+				} else {
+					pageul.append('<li class="Other" id="li_' + (totalPage)
+							+ '"><a>尾页</a></li><li class="Next" id="li_'
+							+ (pageStart + 2) + '"><a ></a></li>');
+				}
+				var clickFunc = function(evt) {
+					console.debug("click goto page:" + this.id.substr(3));
+				};
+				query("li.Other").on("click", clickFunc);
+				query("li.Pre ").on("click", clickFunc);
+				query("li.Next").on("click", clickFunc);
+				query("#topage").on("click", function(evt) {
+					var pageinput = dom.byId("pageindex");
+					console.debug("click goto page=", pageinput.value);
+				});
+
+				dojo.connect(grid, "onRowDblClick", function(e) {
+					var store = this.store;
+					function onRowDblClick(item, request) {
+						console.log("item:" + store.getValue(item, "uuid")
+								+ ":req=" + request);
+
+						var attributes = store.getAttributes(item);
+						for ( var i = 0; i < attributes.length; i++) {
+							console.log(attributes[i] + ":"
+									+ store.getValue(item, attributes[i])+"::"+input);
+							var input=query("#tbcon #"+attributes[i]);
+							if(input!=null)
+							{
+								input.attr("value",store.getValue(item, attributes[i]));
+							}
+						}
+						myFormDialog.show();
+					}
+
+					this.store.fetch({
+						query : {},
+						onItem : onRowDblClick,
+						start : e.rowIndex,
+						count : 1
+					});
+
+				});
+				/* xhr.get({
+					// The URL of the request
+					url : "list.do?start=0&count=100",
+					timeout : 60000,
+					content : {},
+					// The success callback with result from server
+					load : function(newContent) {
+					},
+					// The error handler
+					error : function() {
+					},
+					handle : function() {
+					}
+				}); */
+			});
+
+	require([ "dojo/on", "dojo/dom", "dojo/dom-style", "dojo/mouse",
+			"dojo/domReady!" ], function(on, dom, domStyle, mouse) {
+		var searchButton = dom.byId("searchbtn");
+		on(searchButton, "click", function(evt) {
+			alert("search");
+		});
+
+		var newBtn = dom.byId("newBtn");
+		on(newBtn, "click", function(evt) {
+			myFormDialog.show();
+		});
+
+		//myFormDialog.show();
+	});
+</script>
+</html>

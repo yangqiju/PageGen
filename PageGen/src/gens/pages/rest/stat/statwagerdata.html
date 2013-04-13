@@ -1,0 +1,408 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>投注数据统计</title>
+
+</head>
+<script src="../js/dojo/dojo.js"
+	data-dojo-config="parseOnLoad: true">
+</script>
+<script type="text/javascript" src="../js/nights/header.js"> </script>
+<script type="text/javascript">
+	dojo.require("dojo.parser");
+	dojo.require("dojo/store/Memory");
+	dojo.require("dojo.data.ItemFileWriteStore");
+	dojo.require("dojox.grid.DataGrid");
+	dojo.require("dijit/Dialog");
+	dojo.require("dijit/form/Button");
+	dojo.require("dijit/form/TextBox");
+	dojo.require("dijit/form/DateTextBox");
+	dojo.require("dijit/form/TimeTextBox");
+	dojo.require("dijit.form.NumberTextBox");
+	dojo.require("dijit/form/FilteringSelect");
+	dojo.require("dijit/form/ValidationTextBox");
+	dojo.require("dojox.widget.Standby");
+	
+	require([ "dojo/ready", "dojo/dom","nights/TestDateBox"], function(ready,dom,TestDateBox) {
+		ready(function() {
+				new TestDateBox({
+	            value: "2012-01-01",
+	            name: "statdate"
+	        }, "statdate");
+			
+	         new TestDateBox({
+		            value: "now()",
+		            name: "s_statdate"
+		        }, "s_statdate");
+				
+	        	
+		        new TestDateBox({
+		            value: "now()",
+		            name: "ss_statdate"
+		        }, "ss_statdate");
+				
+				new TestDateBox({
+		            value: "now()",
+		            name: "se_statdate"
+		        }, "se_statdate");
+	        
+
+	    });
+	});
+
+</script>
+
+
+<body class="claro">
+	<div class="S_Nva f_s_12">
+		<a href="../ext/welcome.html">首页</a> >> <a href="">统计</a> >> <span>投注数据统计</span>
+	</div>
+	<div class="S_Other f_s_12" style="height: 109px">
+	<form id="searchform">
+		<div class="S_OtherTop">
+				交易发生时间（那一天）:<input id="ss_statdate" name="ss_statdate" type="text"
+				class="txt1" /> 到  <input  id="se_statdate" name="se_statdate" type="text" class="txt1"/>
+			<input type="button" id="newBtn" class="btnNew1 btnZoom" 
+			style="background: url(../images/add.png);margin-left:20px;" />
+			<input type="button" id="searchbtn" class="btnNew1 btnZoom"
+				style="background: url(../images/save.png);margin-left:110px;" />
+			<input type="button" id="exportBtn" class="btnNew1 btnZoom" 
+			style="background: url(../images/save.png);margin-left:200px;" />
+			<input type="button" id="deleteSelected" class="btnNew1 btnZoom" 
+			style="background: url(../images/cancel.png);margin-left:290px;" />
+		</div>
+
+
+	<div class="S_OtherBottom" style="height: 66px">
+
+		<table  style="margin-left: 8px">
+			<tr align="right">	
+			<td>游戏代码:</td> 
+					<td><input name="s_ltype" id="s_ltype" type="text"
+					class="txt2" /></td>	
+			<td>商户编号:</td> 
+					<td><input name="s_merchantid" id="s_merchantid" type="text"
+					class="txt2" /></td>	
+			<td>期号:</td> 
+					<td><input name="s_period" id="s_period" type="text"
+					class="txt2" /></td>	
+					</tr><tr>
+			<td>出单方:</td> 
+					<td><input name="s_region" id="s_region" type="text"
+					class="txt2" /></td>	
+			<td>商户交易笔数(分):</td> 
+					<td><input name="s_mertradecount" id="s_mertradecount" type="text"
+					class="txt2" /></td>	
+			<td>商户交易金额(分):</td> 
+					<td><input name="s_mertrademoney" id="s_mertrademoney" type="text"
+					class="txt2" /></td>	
+		</tr></table>
+			
+		</div>
+		</form>
+	</div>
+	<div id="basic4" class="S_Other">
+		<div id="gridDiv" class="claro" ></div>
+	</div>
+	<div data-dojo-id="basicStandby" data-dojo-type="dojox.widget.Standby"
+		data-dojo-props="target:'basic4', color:'lightgray', image:'../images/loading.gif'"></div>
+	<div class="Page f_s_12">
+		<form style="margin-left:30px;">
+		每页显示<select style="width:50px" id="pagecount" data-dojo-type="dijit/form/FilteringSelect" onchange="changepagesize()" >
+			<option>10</option>
+			<option>15</option>
+			<option selected>20</option>
+			<option>30</option>
+		</select>条记录
+		<ul id="pageCtrl">
+		</ul>
+		</form>
+	</div>
+	<div style="clear: both;"></div>
+	<!--<div class="dell f_s_12">
+		<div class="S_OtherTop">
+			<input type="checkbox" id="selectAll" name="checkbox2"
+				value="checkbox" /> 全选 <input type="button" class="Btn btnZoom"
+				id="deleteSelected"
+				style="background: url(../../images/b_29dell.jpg)" />
+		</div>
+	</div>-->
+
+	<div class="WinCon" data-dojo-type="dijit/Dialog"
+		data-dojo-id="myFormDialog" title="修改">
+		<div class="dijitDialogPaneContentArea">
+			<form id="submitform">
+				<table id="tbcon" border="0" cellpadding="0" cellspacing="0">
+			 <tr>
+   			   <td class="td1">交易发生时间（那一天）</td>
+			   <td class="td2">
+					<input name="statdate" id="statdate" type="text"
+					class="txt" />	
+					</td>
+   			    <td class="td3">游戏代码</td>
+				<td class="td4">					<input name="ltype" id="ltype" type="text"
+					class="txt" />	
+				</td>
+				</tr>
+			 <tr>
+   			   <td class="td1">商户编号</td>
+			   <td class="td2">
+					<input name="merchantid" id="merchantid" type="text"
+					class="txt" />	
+					</td>
+   			    <td class="td3">期号</td>
+				<td class="td4">					<input name="period" id="period" type="text"
+					class="txt" />	
+				</td>
+				</tr>
+			 <tr>
+   			   <td class="td1">出单方</td>
+			   <td class="td2">
+					<input name="region" id="region" type="text"
+					class="txt" />	
+					</td>
+   			    <td class="td3">商户交易笔数(分)</td>
+				<td class="td4">					<input name="mertradecount" id="mertradecount" type="text"
+					class="txt" />	
+				</td>
+				</tr>
+			 <tr>
+   			   <td class="td1">商户交易金额(分)</td>
+			   <td class="td2">
+					<input name="mertrademoney" id="mertrademoney" type="text"
+					class="txt" />	
+					</td>
+   			    <td class="td3">落地交易笔数(分)</td>
+				<td class="td4">					<input name="tradecount" id="tradecount" type="text"
+					class="txt" />	
+				</td>
+				</tr>
+			 <tr>
+   			   <td class="td1">落地交易金额(分)</td>
+			   <td class="td2">
+					<input name="tradeamount" id="tradeamount" type="text"
+					class="txt" />	
+					</td>
+   			    <td class="td3">备用字段1</td>
+				<td class="td4">					<input name="extrafield1" id="extrafield1" type="text"
+					class="txt" />	
+				</td>
+				</tr>
+			 <tr>
+   			   <td class="td1">备用字段2</td>
+			   <td class="td2">
+					<input name="extrafield2" id="extrafield2" type="text"
+					class="txt" />	
+					</td>
+			</tr>
+					<!-- <tr>
+					<td class="td1">上传文件</td>
+					<td colspan="3" class="td2"><input type="text" class="txt2" />
+						<input type="button" class="Btn2" value="上传" /></td>
+				</tr> -->
+
+				</table>
+			</form>
+			<div style="width: 100%; height: 38px">
+				<table
+					style="height: 38px; width: 300px; position: relative; margin-left: 100px">
+					<tr>
+						<td><input name="button" type="button" id="btnWinOK"
+							class="WinConok btnZoom" /></td>
+						<td><input name="button" type="button"
+							class="WinConCancel btnZoom" onClick="myFormDialog.hide()" /></td>
+					</tr>
+				</table>
+			</div>
+		</div>
+	</div>
+	
+	
+	<div class="DivShow" id="tablehover" style="display: none;">
+		<table border="0" cellpadding="1" cellspacing="1">
+			<tr>
+				<td class="ttd2" colspan="2">详细信息</td>
+			</tr>
+			<tr>
+				<td class="ttd1" 
+				>交易发生时间（那一天）</td>
+				<td class="ttd2" id="tt_statdate"></td>
+			</tr>
+			<tr>
+				<td class="ttd1" 
+				>游戏代码</td>
+				<td class="ttd2" id="tt_ltype"></td>
+			</tr>
+			<tr>
+				<td class="ttd1" 
+				>商户编号</td>
+				<td class="ttd2" id="tt_merchantid"></td>
+			</tr>
+			<tr>
+				<td class="ttd1" 
+				>期号</td>
+				<td class="ttd2" id="tt_period"></td>
+			</tr>
+			<tr>
+				<td class="ttd1" 
+				>出单方</td>
+				<td class="ttd2" id="tt_region"></td>
+			</tr>
+			<tr>
+				<td class="ttd1" 
+				>商户交易笔数(分)</td>
+				<td class="ttd2" id="tt_mertradecount"></td>
+			</tr>
+			<tr>
+				<td class="ttd1" 
+				>商户交易金额(分)</td>
+				<td class="ttd2" id="tt_mertrademoney"></td>
+			</tr>
+			<tr>
+				<td class="ttd1" 
+				>落地交易笔数(分)</td>
+				<td class="ttd2" id="tt_tradecount"></td>
+			</tr>
+			<tr>
+				<td class="ttd1" 
+				>落地交易金额(分)</td>
+				<td class="ttd2" id="tt_tradeamount"></td>
+			</tr>
+			<tr>
+				<td class="ttd1" 
+				>备用字段1</td>
+				<td class="ttd2" id="tt_extrafield1"></td>
+			</tr>
+			<tr>
+				<td class="ttd1" 
+				>备用字段2</td>
+				<td class="ttd2" id="tt_extrafield2"></td>
+			</tr>
+		</table>
+	</div>
+
+
+	<div class="DivShow" id="detailhover" style="display: none;">
+		<table border="0" cellpadding="1" cellspacing="1">
+			<tr>
+				<td class="ttd2"><div align="center">
+						<strong id="detailhovertxt"></strong>
+					</div></td>
+			</tr>
+		</table>
+	</div>
+	
+</body>
+
+<script type="text/javascript">
+	//set up layout
+	function doSearch(grid) {
+		console.log("doSearch:" + grid);
+	}
+	var changepagesize;
+	
+	require([ "nights/tbgrid","nights/params","dojo/domReady!"], function(tbgrid,params) {
+		var layout = [ {
+			name : '选择',
+			field : "checked",
+			width : "30px",
+			editable : true,
+			styles : 'text-align: center;',
+			type : dojox.grid.cells.Bool,
+		}
+		, {
+			name : '交易发生时间（那一天）',
+			field : 'statdate',
+			formatter: tbgrid.formatDate,
+			desc:true,
+			column : 'statdate',
+		}
+		, {
+			name : '游戏代码',
+			field : 'ltype',
+			desc:true,
+			column : 'ltype',
+		}
+		, {
+			name : '商户编号',
+			field : 'merchantid',
+			desc:true,
+			column : 'merchantid',
+		}
+		, {
+			name : '期号',
+			field : 'period',
+			desc:true,
+			column : 'period',
+		}
+		, {
+			name : '出单方',
+			field : 'region',
+			desc:true,
+			column : 'region',
+		}
+		, {
+			name : '商户交易笔数(分)',
+			field : 'mertradecount',
+			desc:true,
+			column : 'mertradecount',
+		}
+		, {
+			name : '商户交易金额(分)',
+			field : 'mertrademoney',
+			desc:true,
+			column : 'mertrademoney',
+		}
+		, {
+			name : '落地交易笔数(分)',
+			field : 'tradecount',
+			desc:true,
+			column : 'tradecount',
+		}
+		, {
+			name : '落地交易金额(分)',
+			field : 'tradeamount',
+			desc:true,
+			column : 'tradeamount',
+		}
+		, {
+			name : '备用字段1',
+			field : 'extrafield1',
+			desc:true,
+			column : 'extrafield1',
+		}
+		, {
+			name : '备用字段2',
+			field : 'extrafield2',
+			desc:true,
+			column : 'extrafield2',
+		}
+		,{
+			name : '修改',
+			field : 'modify',
+			width : "30px",
+			formatter: function(cellValue, rowIndex){
+			    // return needed images for rowIndex of column 'col1'
+			    return '<img src="../images/save.png" />';
+			}
+		}
+];
+		var notNullAble = [];
+			notNullAble.push('statdate');
+			notNullAble.push('ltype');
+			notNullAble.push('merchantid');
+			notNullAble.push('period');
+			notNullAble.push('region');
+		
+		tbgrid.setNotNullableStr(notNullAble);
+		//tbgrid.setPriv(params.getStr("priv"));
+		tbgrid.setReadOnly(false);
+		tbgrid.loadOnStart(layout,'/SpringMVCTest/statwagerdata','primaryKey');
+		changepagesize=tbgrid.changepagesize;
+		
+	});
+	//dojo.require("dojox.grid.enhanced.plugins.IndirectSelection");
+
+</script>
+</html>

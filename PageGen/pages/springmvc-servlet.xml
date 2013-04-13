@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns:mvc="http://www.springframework.org/schema/mvc"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    default-autowire="byName"
+    xmlns="http://www.springframework.org/schema/beans"
+    xsi:schemaLocation="
+      http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd       
+      http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd       
+	  http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.1.xsd" >
+
+    <bean
+        id="viewResolver"
+        class="org.springframework.web.servlet.view.InternalResourceViewResolver" >
+
+        <property
+            name="prefix"
+            value="/" />
+
+        <property
+            name="suffix"
+            value=".jsp" />
+    </bean>
+
+    <context:component-scan base-package="com.joyveb.cmservice.controller" />
+
+
+    <mvc:annotation-driven>
+
+        <mvc:message-converters>
+
+            <bean class="org.springframework.http.converter.StringHttpMessageConverter" />
+
+            <bean class="org.springframework.http.converter.ResourceHttpMessageConverter" />
+
+            <bean class="org.springframework.http.converter.json.MappingJacksonHttpMessageConverter" >
+
+                <property
+                    name="objectMapper"
+                    ref="testObjectMapper" />
+            </bean>
+        </mvc:message-converters>
+    </mvc:annotation-driven>
+
+    <bean
+        id="testObjectMapper"
+        class="com.joyveb.util.TestObjectMapper" />
+
+    <bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping" >
+
+        <property
+            name="alwaysUseFullPath"
+            value="true" />
+    </bean>
+
+    
+    <!-- class="org.springframework.http.converter.json.MappingJacksonHttpMessageConverter" -->
+
+    <bean
+        id="multipartResolver"
+        class="org.springframework.web.multipart.commons.CommonsMultipartResolver" >
+
+        <property
+            name="maxUploadSize"
+            value="10000000" />
+
+        <property
+            name="defaultEncoding"
+            value="UTF-8" />
+    </bean>
+
+    <context:component-scan base-package="com.joyveb.gens.sys.ctrl" />
+
+    
+    <mvc:interceptors>  
+       <mvc:interceptor>  
+           <mvc:mapping path="/**"/>  
+			<bean class="com.joyveb.cmservice.filter.CustomerLogger" />
+       </mvc:interceptor>  
+   </mvc:interceptors>  
+
+
+</beans>

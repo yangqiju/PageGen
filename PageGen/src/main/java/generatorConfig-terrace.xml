@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE generatorConfiguration PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN" "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd" >
+<generatorConfiguration>
+	<context id="ulwp_persist_stat" targetRuntime="Ibatis2Java5">
+		<plugin type="com.joyveb.util.FindByPagePlugin" />
+		<jdbcConnection driverClass="oracle.jdbc.driver.OracleDriver"
+			connectionURL="jdbc:oracle:thin:@192.168.3.24:1521:lottery" userId="lotterykeno"
+			password="lotterykeno" />
+		<javaTypeResolver>
+			<property name="forceBigDecimals" value="false" />
+		</javaTypeResolver>
+		<javaModelGenerator targetPackage="com.joyveb.report.gens.terrace.domain"
+			targetProject="src/gens/java">
+			<property name="enableSubPackages" value="true" />
+			<property name="trimStrings" value="false" />
+		</javaModelGenerator>
+		<sqlMapGenerator targetPackage="com.joyveb.report.gens.terrace.dao.ibatis"
+			targetProject="src/gens/java">
+			<property name="enableSubPackages" value="false" />
+		</sqlMapGenerator>
+		<javaClientGenerator targetPackage="com.joyveb.report.gens.terrace.dao.iface"
+			implementationPackage="com.joyveb.report.gens.terrace.dao.impl"
+			targetProject="src/gens/java" type="SPRING">
+			<property name="enableSubPackages" value="false" />
+		</javaClientGenerator>
+		
+		<table tableName="T_STAT_WAGERDATA" domainObjectName="StatWagerdata"></table>
+		<table tableName="T_PARA_MERCHANT" domainObjectName="ParaMerchant"></table>
+		<!-- 
+		<table tableName="T_CORE_KENO_VALIABL" domainObjectName="CoreKenoValiabl"></table>
+		<table tableName="T_CORE_LOTO_VALIABL" domainObjectName="CoreLotoValiabl"></table>
+		<table tableName="T_CORE_SLTO_VALIABL" domainObjectName="CoreSltoValiabl"></table>
+		<table tableName="T_CORE_PCK3_VALIABL" domainObjectName="CorePck3Valiabl"></table>
+		 -->
+	</context>
+</generatorConfiguration>
