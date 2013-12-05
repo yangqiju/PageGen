@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<generatorConfiguration>
+	<comment>mongoDb tables</comment>
+
+	<context id="MongoDaoSupport">
+		<targetSource>src/test/java</targetSource>
+		<targetPackage>com.joyveb.mongo</targetPackage>
+
+		<Tables>
+			<Table>
+				<name>T_ADMIN_Info</name>
+				<domainObjectName>AdminInfo</domainObjectName>
+				<Fields>
+					<Field>
+						<name>name</name>
+						<type>String</type>
+					</Field>
+					<Field>
+						<name>age</name>
+						<type>Integer</type>
+					</Field>
+					<Field>
+						<name>createDate</name>
+						<type>Date</type>
+					</Field>
+				</Fields>
+			</Table>
+			<Table>
+				<name>T_ADMIN_Info</name>
+				<domainObjectName>AdminInfo</domainObjectName>
+				<Fields>
+					<Field>
+						<name>name</name>
+						<type>String</type>
+					</Field>
+					<Field>
+						<name>age</name>
+						<type>Integer</type>
+					</Field>
+					<Field>
+						<name>createDate</name>
+						<type>Date</type>
+					</Field>
+				</Fields>
+			</Table>
+		</Tables>
+	</context>
+</generatorConfiguration>

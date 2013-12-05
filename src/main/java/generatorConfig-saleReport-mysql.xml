@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE generatorConfiguration PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN" "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd" >
+<generatorConfiguration>
+	<context id="ulwp_persist_stat" targetRuntime="Ibatis2Java5">
+		<plugin type="com.joyveb.util.FindByPagePlugin_mysql" />
+		<jdbcConnection driverClass="com.mysql.jdbc.Driver"
+			connectionURL="jdbc:mysql://localhost:3306/test_schema" userId="root" password="admin"  />
+		<javaTypeResolver>
+			<property name="forceBigDecimals" value="false" />
+		</javaTypeResolver>
+		<javaModelGenerator targetPackage="com.joyveb.report.gens.salereport.domain"
+			targetProject="src/gens/java">
+			<property name="enableSubPackages" value="true" />
+			<property name="trimStrings" value="false" />
+		</javaModelGenerator>
+		<sqlMapGenerator targetPackage="com.joyveb.report.gens.salereport.dao.ibatis"
+			targetProject="src/gens/java">
+			<property name="enableSubPackages" value="false" />
+		</sqlMapGenerator>
+		<javaClientGenerator targetPackage="com.joyveb.report.gens.salereport.dao.iface"
+			implementationPackage="com.joyveb.report.gens.salereport.dao.impl"
+			targetProject="src/gens/java" type="SPRING">
+			<property name="enableSubPackages" value="false" />
+		</javaClientGenerator>
+		<table tableName="T_STAT_WAGERDATA" domainObjectName="StatWagerData"></table>
+		<table tableName="T_DAY_STAT" domainObjectName="DayStat"></table>
+		<!--
+		<table tableName="T_MONTH_STAT" domainObjectName="MonthStat"></table>
+		<table tableName="T_WEEK_STAT" domainObjectName="WeekStat"></table>
+		<table tableName="T_YEAR_STAT" domainObjectName="YearStat"></table>
+		
+		<table tableName="T_PARA_DBPROPERTIES" domainObjectName="ParaDbproperties"></table>
+		 <table tableName="T_ADMIN_OPERATOR" domainObjectName="AdminOperator"></table>
+		<table tableName="T_ADMIN_OPERATOR_ROLE" domainObjectName="AdminOperatorRole"></table>
+		<table tableName="T_ADMIN_PERMISSION" domainObjectName="AdminPermission"></table>
+		<table tableName="T_ADMIN_ROLE" domainObjectName="AdminRole"></table>
+		<table tableName="T_ADMIN_ROLE_PERMISSION" domainObjectName="AdminRolePermission"></table>
+		 -->
+		 
+	</context>
+</generatorConfiguration>
